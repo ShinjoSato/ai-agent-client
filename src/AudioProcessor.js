@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { MicVocal, CircleStop } from 'lucide-react';
 
 // 🎤 録音用カスタムフック
 function useAudioRecorder(setParticleIntensity, setIsPlaying) {
@@ -42,8 +43,9 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
             intensityRef.current = 0;
             setParticleIntensity(0);
           }; // 再生終了時にフラグと粒子効果をリセット
-          audioRef.current.play().catch((error) => console.error("Playback error:", error));
 
+          // 再生開始
+          audioRef.current.play().catch((error) => console.error("Playback error:", error));
           setIsPlaying(true);
           analyzeAudio(audioRef.current);
         }
@@ -83,15 +85,8 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
     }
-    if (audioSourceRef.current) {
-      try {
-        audioSourceRef.current.disconnect();
-        audioSourceRef.current = null;
-      } catch (error) {
-        console.warn("Audio source already disconnected");
-      }
-    }
     try {
+      // @todo: 再生に合わせて粒子が波打つが、二回目以降でエラー
       audioSourceRef.current = audioContextRef.current.createMediaElementSource(audioElement);
       analyserRef.current = audioContextRef.current.createAnalyser();
       analyserRef.current.fftSize = 256;
@@ -139,9 +134,18 @@ export default function AudioProcessor({ setParticleIntensity, setIsPlaying }) {
   const { isRecording, startRecording, stopRecording } = useAudioRecorder(setParticleIntensity, setIsPlaying);
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? "Stop Recording" : "Start Recording"}
+    <div style={{ textAlign: "center", }}>
+      <button
+        style={{background: "none", border: "none", outline: "none", cursor: "pointer"}}
+        onClick={isRecording ? stopRecording : startRecording}
+      >
+        {isRecording ?
+          (
+            <CircleStop color="white"/>
+          ) : (
+            <MicVocal color="white"/>
+          )
+        }
       </button>
     </div>
   );
