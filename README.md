@@ -1,12 +1,9 @@
-
-
-
 # 分身AIエージェント（クライアントサイド）
 
 <div style="display: flex; justify-content: center;">
     <video controls src="https://github.com/user-attachments/assets/e8d6fcbf-acac-4d8a-8dd4-cbdf2bd39dcd" muted="true"></video>
-    ※音声はありません
 </div>
+※音声はありません
 
 ## 概要
 
