@@ -15,6 +15,13 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
   const audioSourceRef = useRef(null);
   const intensityRef = useRef(0);
 
+  // ソケット用
+  const ws = useRef(null);
+  const audioContext = useRef(null);
+  const sourceBuffer = useRef(null);
+  const [data, setData] = useState(null);
+  const [isSocketPlaying, setIsSocketPlaying] = useState(false);
+
   // 🔴 録音開始
   const startRecording = async () => {
     console.log("Start Recording button clicked");
@@ -22,7 +29,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
       setIsRecording(true);
       setIsPlaying(false);
       streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder.current = new MediaRecorder(streamRef.current);
+      mediaRecorder.current = new MediaRecorder(streamRef.current, { mimeType: "audio/webm" });
       audioChunks = [];
 
       mediaRecorder.current.ondataavailable = (event) => {
@@ -31,23 +38,69 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
 
       mediaRecorder.current.onstop = () => {
         if (audioChunks.length > 0) {
-          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+          const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
           setAudioBlob(audioBlob);
           console.log("Audio recorded successfully:", audioBlob);
 
-          // 🔊 自動再生
-          const audioUrl = URL.createObjectURL(audioBlob);
-          audioRef.current.src = audioUrl;
-          audioRef.current.onended = () => {
-            setIsPlaying(false);
-            intensityRef.current = 0;
-            setParticleIntensity(0);
-          }; // 再生終了時にフラグと粒子効果をリセット
+          // ソケット通信ができればいい
+          ws.current = new WebSocket("ws://127.0.0.1:8000/ws");
+          ws.current.binaryType = "arraybuffer"; // バイナリデータ受信設定
 
-          // 再生開始
-          audioRef.current.play().catch((error) => console.error("Playback error:", error));
-          setIsPlaying(true);
-          analyzeAudio(audioRef.current);
+          ws.current.onopen = async () => {
+            console.log("WebSocket 接続成功！");
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            console.log("送信するデータ:", new Uint8Array(arrayBuffer).slice(0, 20)); // 最初の 20 バイトを表示
+            ws.current.send(arrayBuffer); // 最初に "mp3" または "json" を送信
+          };
+
+          ws.current.onmessage = async (event) => {
+            if (typeof event.data === "string") {
+                // JSON の場合
+                console.log("JSON データ受信:", event.data);
+                setData(JSON.parse(event.data));
+            } else if (event.data instanceof ArrayBuffer) {
+                // MP3 の場合
+                console.log("MP3 データ受信");
+
+                if (!audioContext.current) {
+                    audioContext.current = new AudioContext();
+                }
+                const arrayBuffer = event.data;
+                const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
+                const newSource = audioContext.current.createBufferSource();
+                newSource.buffer = audioBuffer;
+                newSource.connect(audioContext.current.destination);
+                newSource.start();
+                setIsPlaying(true);
+                setIsSocketPlaying(true);
+            }
+          };
+
+          ws.current.onclose = () => {
+              console.log("WebSocket 切断");
+              setIsPlaying(false);
+              intensityRef.current = 0;
+              setParticleIntensity(0);
+              setIsSocketPlaying(false);
+          };
+
+          // ws.current.close();
+
+
+          
+          // // 🔊 自動再生
+          // const audioUrl = URL.createObjectURL(audioBlob);
+          // audioRef.current.src = audioUrl;
+          // audioRef.current.onended = () => {
+          //   setIsPlaying(false);
+          //   intensityRef.current = 0;
+          //   setParticleIntensity(0);
+          // }; // 再生終了時にフラグと粒子効果をリセット
+
+          // // 再生開始
+          // audioRef.current.play().catch((error) => console.error("Playback error:", error));
+          // setIsPlaying(true);
+          // analyzeAudio(audioRef.current);
         }
       };
 

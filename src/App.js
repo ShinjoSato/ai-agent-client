@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import AudioProcessor from "./AudioProcessor";
 import glsl from "babel-plugin-glsl/macro";
 
@@ -70,6 +70,7 @@ function MovingParticles({ particleIntensityRef, isPlayingRef }) {
     if (ref.current?.material?.uniforms) {
       ref.current.material.uniforms.uIntensity.value = intensity;
       ref.current.material.uniforms.uIsPlaying.value = isPlayingRef.current ? 1.0 : 0.0; // 🎯 float に変換
+      // ref.current.material.uniforms.uIsPlaying.value = isPlaying ? 1.0 : 0.0; // 🎯 float に変換
     }
     ref.current.rotation.y = clock.getElapsedTime() * 0.15;
   });
@@ -101,6 +102,7 @@ function MovingParticles({ particleIntensityRef, isPlayingRef }) {
 export default function App() {
   const particleIntensityRef = useRef(0);
   const isPlayingRef = useRef(false);
+  // const [isPlaying, setIsPlaying] = useState(false)
 
   return (
     <div style={{ position: "relative" }}>
@@ -110,7 +112,11 @@ export default function App() {
       >
         <ambientLight intensity={1.0} />
         <pointLight position={[10, 10, 10]} />
-        <MovingParticles particleIntensityRef={particleIntensityRef} isPlayingRef={isPlayingRef} />
+        <MovingParticles
+          particleIntensityRef={particleIntensityRef}
+          isPlayingRef={isPlayingRef}
+          // isPlaying={isPlaying}
+        />
       </Canvas>
 
       <div
@@ -127,6 +133,7 @@ export default function App() {
         <AudioProcessor
           setParticleIntensity={(intensity) => (particleIntensityRef.current = intensity)}
           setIsPlaying={(playing) => (isPlayingRef.current = playing)}
+          // setIsPlaying={setIsPlaying}
         />
       </div>
     </div>
