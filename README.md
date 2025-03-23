@@ -43,20 +43,20 @@
 1. **Node.js をインストール**（バージョン 22.11.0 推奨）
 
 2. **このリポジトリをクローン**
-```bash
-git clone https://github.com/your-username/ai-agent-client.git
-cd ai-agent-client
-```
+    ```bash
+    git clone https://github.com/your-username/ai-agent-client.git
+    cd ai-agent-client
+    ```
 
 3. **依存ライブラリをインストール（初回のみ）**
-```bash
-npm install
-```
+    ```bash
+    npm install
+    ```
 
 4. **アプリを起動**
-```bash
-npm run start
-```
+    ```bash
+    npm run start
+    ```
 
 5. **アクセス**
 ブラウザで `http://localhost:3000` を開いて動作確認してください。
