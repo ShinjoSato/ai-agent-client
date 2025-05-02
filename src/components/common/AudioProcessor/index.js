@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
-import { MicVocal, CircleStop } from 'lucide-react';
+import { Mic, LoaderCircle, CircleStop } from 'lucide-react';
 
 // 🎤 録音用カスタムフック
-function useAudioRecorder(setParticleIntensity, setIsPlaying) {
+function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
   const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef(null);
@@ -20,7 +20,6 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
   const audioContext = useRef(null);
   const sourceBuffer = useRef(null);
   const [data, setData] = useState(null);
-  const [isSocketPlaying, setIsSocketPlaying] = useState(false);
 
   // 🔴 録音開始
   const startRecording = async () => {
@@ -70,18 +69,19 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
                 const newSource = audioContext.current.createBufferSource();
                 newSource.buffer = audioBuffer;
                 newSource.connect(audioContext.current.destination);
+                newSource.onended = () => {
+                  setIsPlaying(false);
+                  intensityRef.current = 0;
+                  setParticleIntensity(0);
+                  setIsWaiting(false);
+                }
                 newSource.start();
                 setIsPlaying(true);
-                setIsSocketPlaying(true);
             }
           };
 
           ws.current.onclose = () => {
               console.log("WebSocket 切断");
-              setIsPlaying(false);
-              intensityRef.current = 0;
-              setParticleIntensity(0);
-              setIsSocketPlaying(false);
           };
 
           // ws.current.close();
@@ -172,6 +172,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
       console.log("Recording stopped...");
       setIsRecording(false);
       setIsPlaying(false);
+      setIsWaiting(true);
       intensityRef.current = 0;
       setParticleIntensity(0);
     } else {
@@ -184,21 +185,23 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying) {
 
 // 🎛 録音ボタンを表示するコンポーネント
 export default function AudioProcessor({ setParticleIntensity, setIsPlaying }) {
-  const { isRecording, startRecording, stopRecording } = useAudioRecorder(setParticleIntensity, setIsPlaying);
+  const [isWaiting, setIsWaiting] = useState(false)
+  const { isRecording, startRecording, stopRecording } = useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting);
 
   return (
     <div style={{ textAlign: "center", }}>
       <button
         style={{background: "none", border: "none", outline: "none", cursor: "pointer"}}
         onClick={isRecording ? stopRecording : startRecording}
+        disabled={isWaiting}
       >
-        {isRecording ?
-          (
-            <CircleStop color="white"/>
-          ) : (
-            <MicVocal color="white"/>
-          )
-        }
+        {isRecording ? (
+          <CircleStop color="white" />
+        ) : isWaiting ? (
+          <LoaderCircle color="white" className="spin" />
+        ) : (
+          <Mic color="white" />
+        )}
       </button>
     </div>
   );
