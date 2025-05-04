@@ -23,9 +23,12 @@ export default function RingParticles({ particleIntensityRef, isPlayingRef, rota
 
       // 45度回転させる（X軸周りに回転）
       const tilt = Math.PI / 4; // 45度
+      const rotatedY = y * Math.cos(tilt) - z * Math.sin(tilt);
+      const rotatedZ = y * Math.sin(tilt) + z * Math.cos(tilt);
+
       positions[i * 3] = x;
-      positions[i * 3 + 1] = y * Math.cos(tilt) - z * Math.sin(tilt);
-      positions[i * 3 + 2] = y * Math.sin(tilt) + z * Math.cos(tilt);
+      positions[i * 3 + 1] = rotatedY;
+      positions[i * 3 + 2] = rotatedZ;
     }
     return positions;
   }, [count]);
@@ -33,6 +36,7 @@ export default function RingParticles({ particleIntensityRef, isPlayingRef, rota
   useFrame(() => {
     if (ringRef.current) {
       ringRef.current.rotation.y = rotationRef.current.y;
+      ringRef.current.rotation.x = Math.PI / 4; // X軸周りに45度回転
       
       if (ringRef.current.material?.uniforms) {
         ringRef.current.material.uniforms.uIntensity.value = particleIntensityRef.current;
