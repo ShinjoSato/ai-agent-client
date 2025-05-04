@@ -14,7 +14,7 @@ export default function MovingParticles({ particleIntensityRef, isPlayingRef }) 
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 3 + Math.random() * 2;
+      const r = 3 + 1 * 2;
 
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
