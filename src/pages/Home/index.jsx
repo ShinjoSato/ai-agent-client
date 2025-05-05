@@ -23,17 +23,7 @@ export default function Home() {
         />
       </Canvas>
 
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "rgba(0, 0, 0, 0.5)",
-          padding: "10px",
-          borderRadius: "10px",
-        }}
-      >
+      <div className="absolute bottom-5 left-1/2 bg-black/50 rounded-[10px]">
         <AudioProcessor
           setParticleIntensity={(intensity) => (particleIntensityRef.current = intensity)}
           setIsPlaying={(playing) => (isPlayingRef.current = playing)}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Mic, LoaderCircle, CircleStop } from 'lucide-react';
+import { Button } from "@/components/ui/button"
 
 // 🎤 録音用カスタムフック
 function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
@@ -190,19 +191,21 @@ export default function AudioProcessor({ setParticleIntensity, setIsPlaying }) {
 
   return (
     <div className="text-center">
-      <button
-        className="bg-transparent border-none outline-none cursor-pointer"
+      <Button
+        className="group p-[10px] text-white group-hover:text-black"
+        variant="ghost"
+        size="icon"
         onClick={isRecording ? stopRecording : startRecording}
         disabled={isWaiting}
       >
         {isRecording ? (
-          <CircleStop color="white" />
+          <CircleStop />
         ) : isWaiting ? (
-          <LoaderCircle color="white" className="spin" />
+          <LoaderCircle  className="spin" />
         ) : (
-          <Mic color="white" />
+          <Mic />
         )}
-      </button>
+      </Button>
     </div>
   );
 }
