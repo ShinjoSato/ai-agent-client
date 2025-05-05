@@ -189,9 +189,9 @@ export default function AudioProcessor({ setParticleIntensity, setIsPlaying }) {
   const { isRecording, startRecording, stopRecording } = useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting);
 
   return (
-    <div style={{ textAlign: "center", }}>
+    <div className="text-center">
       <button
-        style={{background: "none", border: "none", outline: "none", cursor: "pointer"}}
+        className="bg-transparent border-none outline-none cursor-pointer"
         onClick={isRecording ? stopRecording : startRecording}
         disabled={isWaiting}
       >

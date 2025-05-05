@@ -5,7 +5,7 @@ import fragmentShader from "../../../shaders/effects/fragment.js";
 
 export default function SphereParticles({ particleIntensityRef, isPlayingRef, rotationRef }) {
   const sphereRef = useRef();
-  const count = 1000;
+  const count = 1400;
 
   // 球体のパーティクル
   const sphereParticles = useMemo(() => {
