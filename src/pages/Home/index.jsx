@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion"
 import AudioProcessor from "../../components/common/AudioProcessor";
 import MovingParticles from "../../components/effects/MovingParticles";
 
@@ -36,7 +37,17 @@ export default function Home() {
       {/* オーバーレイコンポーネント */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-5 right-5 pointer-events-auto">
-          {isCardOpen && <DemoCard />}
+          {isCardOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="origin-top-right"
+            >
+              <DemoCard />
+            </motion.div>
+          )}
         </div>
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/50 rounded-[10px] pointer-events-auto">
           <AudioProcessor
@@ -59,6 +70,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useResponseStore } from "@/stores/responseStore"
 
 function DemoCard() {
@@ -71,43 +83,45 @@ function DemoCard() {
         <CardDescription>受信データを表示させます</CardDescription>
       </CardHeader>
       <CardContent>
-        <div>
-          <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-            <Languages className="h-4 w-4 text-sky-500"/>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {language}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {'1 hour ago'}
-              </p>
+        <ScrollArea className="max-h-[35vh]">
+          <div>
+            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+              <Languages className="h-4 w-4 text-sky-500"/>
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {language}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {'1 hour ago'}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-            <User className="h-4 w-4 text-sky-500"/>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {request}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {'1 hour ago'}
-              </p>
+            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+              <User className="h-4 w-4 text-sky-500"/>
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {request}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {'1 hour ago'}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-            <Bot className="h-4 w-4 text-sky-500"/>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {response}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {'1 hour ago'}
-              </p>
+            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+              <Bot className="h-4 w-4 text-sky-500"/>
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {response}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {'1 hour ago'}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollArea>
       </CardContent>
       <CardFooter>
         <p>Card Footer</p>
