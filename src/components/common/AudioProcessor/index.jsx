@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Mic, LoaderCircle, CircleStop } from 'lucide-react';
 import { Button } from "@/components/ui/button"
+import { useResponseStore } from "@/stores/responseStore"
 
 // 🎤 録音用カスタムフック
 function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
@@ -20,7 +21,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
   const ws = useRef(null);
   const audioContext = useRef(null);
   const sourceBuffer = useRef(null);
-  const [data, setData] = useState(null);
+  const { setLanguage, animateSetText } = useResponseStore();
 
   // 🔴 録音開始
   const startRecording = async () => {
@@ -55,9 +56,23 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
 
           ws.current.onmessage = async (event) => {
             if (typeof event.data === "string") {
+                const response = JSON.parse(event.data);
                 // JSON の場合
-                console.log("JSON データ受信:", event.data);
-                setData(JSON.parse(event.data));
+                console.log("JSON データ受信:", response);
+
+                if (response.type == 'language') {
+                  setLanguage(response.message)
+                } else if (response.type == 'request') {
+                  animateSetText({
+                    key: 'request',
+                    text: response.message
+                  })
+                } else if (response.type == 'response') {
+                  animateSetText({
+                    key: 'response',
+                    text: response.message
+                  })
+                }
             } else if (event.data instanceof ArrayBuffer) {
                 // MP3 の場合
                 console.log("MP3 データ受信");
