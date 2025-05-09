@@ -60,14 +60,18 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
                 // JSON の場合
                 console.log("JSON データ受信:", response);
 
+                // @todo: setLanguage, animateSetTextをすると音声受信時にオレンジに光らなくなる
                 if (response.type == 'language') {
+                  console.log('language')
                   setLanguage(response.message)
                 } else if (response.type == 'request') {
+                  console.log('request')
                   animateSetText({
                     key: 'request',
                     text: response.message
                   })
                 } else if (response.type == 'response') {
+                  console.log('response')
                   animateSetText({
                     key: 'response',
                     text: response.message
