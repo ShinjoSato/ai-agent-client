@@ -1,19 +1,25 @@
 import { create } from 'zustand'
+import { Languages, User, Bot } from 'lucide-react';
 
 export const useResponseStore = create((set) => ({
-  language: '',
-  request: '',
-  response: '',
-  setLanguage: (language) => set({ language }),
-  setRequest: (request) => set({ request }),
-  setResponse: (response) => set({ response }),
+  responseList: [{
+    iconComponent: <Languages className="h-4 w-4 text-sky-500"/>,
+    type: 'language',
+    title: '',
+    subtitle: ''
+  }, {
+    iconComponent: <User className="h-4 w-4 text-sky-500"/>,
+    type: 'request',
+    title: '',
+    subtitle: ''
+  }, {
+    iconComponent: <Bot className="h-4 w-4 text-sky-500"/>,
+    type: 'response',
+    title: '',
+    subtitle: ''
+  }],
 
-  // 共通のアニメーション関数
-  animateSetText: async ({ key, text, interval = 50 }) => {
-    set({ [key]: '' })
-    for (let i = 1; i <= text.length; i++) {
-      await new Promise(res => setTimeout(res, interval))
-      set({ [key]: text.slice(0, i) })
-    }
-  }
+  setResponseList:(type, title, subtitle) => set((state) => ({
+    responseList: state.responseList.map((item) => item.type === type ? { ...item, title, subtitle } : item)
+  })),
 }))

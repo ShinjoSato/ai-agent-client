@@ -21,7 +21,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
   const ws = useRef(null);
   const audioContext = useRef(null);
   const sourceBuffer = useRef(null);
-  const { setLanguage, animateSetText } = useResponseStore();
+  const { setResponseList } = useResponseStore();
 
   // 🔴 録音開始
   const startRecording = async () => {
@@ -56,27 +56,13 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
 
           ws.current.onmessage = async (event) => {
             if (typeof event.data === "string") {
-                const response = JSON.parse(event.data);
-                // JSON の場合
-                console.log("JSON データ受信:", response);
+              const response = JSON.parse(event.data);
+              // JSON の場合
+              console.log("JSON データ受信:", response);
 
-                // @todo: setLanguage, animateSetTextをすると音声受信時にオレンジに光らなくなる
-                if (response.type == 'language') {
-                  console.log('language')
-                  setLanguage(response.message)
-                } else if (response.type == 'request') {
-                  console.log('request')
-                  animateSetText({
-                    key: 'request',
-                    text: response.message
-                  })
-                } else if (response.type == 'response') {
-                  console.log('response')
-                  animateSetText({
-                    key: 'response',
-                    text: response.message
-                  })
-                }
+              // 受信したデータをリストに反映
+              // @todo: setLanguage, animateSetTextをすると音声受信時にオレンジに光らなくなる
+              setResponseList(response.type, response.message, '1 hour ago')
             } else if (event.data instanceof ArrayBuffer) {
                 // MP3 の場合
                 console.log("MP3 データ受信");
@@ -214,7 +200,7 @@ export default function AudioProcessor({ setParticleIntensity, setIsPlaying }) {
         className="group p-[10px] text-white group-hover:text-black"
         variant="ghost"
         size="icon"
-        onClick={isRecording ? stopRecording : startRecording}
+        onClick={isRecording ? () => stopRecording() : () => startRecording()}
         disabled={isWaiting}
       >
         {isRecording ? (

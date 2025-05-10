@@ -1,23 +1,22 @@
 import { Canvas } from "@react-three/fiber";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion"
+import clsx from 'clsx'
+import { useResponseStore } from "@/stores/responseStore"
 import AudioProcessor from "../../components/common/AudioProcessor";
 import MovingParticles from "../../components/effects/MovingParticles";
 
 export default function Home() {
   const particleIntensityRef = useRef(0);
   const isPlayingRef = useRef(false);
-  const { language, request, response } = useResponseStore();
+  const { responseList } = useResponseStore();
   const [isCardOpen, setIsCardOpen] = useState(false);
   // const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
-    console.log(language, request, response)
-    if (language) {
-      console.log('open')
-      setIsCardOpen(true);
-    }
-  }, [language, request, response])
+    console.log(responseList)
+    setIsCardOpen((responseList[0].title)? true : false);
+  }, [responseList])
 
   return (
     <div style={{ position: "relative" }}>
@@ -36,7 +35,10 @@ export default function Home() {
 
       {/* オーバーレイコンポーネント */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-5 right-5 pointer-events-auto">
+        <div className={clsx(
+          "w-full md:w-1/2 xl:w-1/3",
+          "absolute right-0 pointer-events-auto p-3"
+        )}>
           {isCardOpen && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
@@ -61,7 +63,6 @@ export default function Home() {
 }
 
 
-import { Languages, User, Bot } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -71,61 +72,101 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useResponseStore } from "@/stores/responseStore"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const avatarList = [
+  {
+    src: "https://github.com/ShinjoSato.png",
+    name: "John Doe",
+  },{
+    src: "https://github.com/ShinjoSato.png",
+    name: "John Doe",
+  },{
+    src: "https://github.com/ShinjoSato.png",
+    name: "John Doe",
+  }
+]
 
 function DemoCard() {
-  const { language, request, response } = useResponseStore();
+  const { responseList } = useResponseStore();
 
   return (
-    <Card className="max-w-[50vw]">
-      <CardHeader>
-        <CardTitle>取得データ</CardTitle>
-        <CardDescription>受信データを表示させます</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="BBB bg-black/30 backdrop-blur">
+      {/* <CardHeader>
+      </CardHeader> */}
+      <CardContent className="p-4">
+        <div className="pb-4 flex flex-row-reverse justify-end -space-x-3 space-x-reverse *:ring-3 *:ring-background">
+          {avatarList.map((avatar, index) => (
+            <Avatar key={index} className="z-20 size-8 ring-2 ring-white">
+              <AvatarImage src={avatar.src} />
+            </Avatar>
+          ))}
+        </div>
+
         <ScrollArea className="max-h-[35vh]">
           <div>
-            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-              <Languages className="h-4 w-4 text-sky-500"/>
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {language}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {'1 hour ago'}
-                </p>
+            {responseList.map((reply, index) => (
+              <div key={index} className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                {reply.iconComponent}
+                <div className="space-y-1">
+                  <div className="text-sm font-medium leading-none">
+                    {reply.title ? (
+                      <AnimatedText text={reply.title} />
+                    ) : (
+                      <Skeleton className="w-24 h-4" />
+                    )}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {reply.subtitle ? (
+                      <AnimatedText text={reply.subtitle} />
+                    ) : (
+                      <Skeleton className="w-24 h-4" />
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-              <User className="h-4 w-4 text-sky-500"/>
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {request}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {'1 hour ago'}
-                </p>
-              </div>
-            </div>
-
-            <div className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-              <Bot className="h-4 w-4 text-sky-500"/>
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {response}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {'1 hour ago'}
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </ScrollArea>
       </CardContent>
       <CardFooter>
-        <p>Card Footer</p>
+        <p className="text-xs text-gray-400">version 0.0</p>
       </CardFooter>
     </Card>
+  )
+}
+
+
+const AnimatedText = ({ text, delay = 30 }) => {
+  const [visibleLength, setVisibleLength] = useState(0)
+
+  useEffect(() => {
+    setVisibleLength(0)
+    const interval = setInterval(() => {
+      setVisibleLength((prev) => {
+        if (prev >= text.length) {
+          clearInterval(interval)
+          return prev
+        }
+        return prev + 1
+      })
+    }, delay)
+
+    return () => clearInterval(interval)
+  }, [text, delay])
+
+  return (
+    <span className="whitespace-pre-wrap break-words [word-break:keep-all]">
+      {text.slice(0, visibleLength).split("").map((char, i) => (
+        <span
+          key={i}
+          className="opacity-0 animate-fade-in inline"
+          style={{ animationDelay: `${i * delay}ms`, animationFillMode: "forwards" }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
   )
 }
