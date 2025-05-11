@@ -62,7 +62,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
 
               // 受信したデータをリストに反映
               // @todo: setLanguage, animateSetTextをすると音声受信時にオレンジに光らなくなる
-              setResponseList(response.type, response.message, '1 hour ago')
+              setResponseList(response.user.type, response.message, response.language)
             } else if (event.data instanceof ArrayBuffer) {
                 // MP3 の場合
                 console.log("MP3 データ受信");
