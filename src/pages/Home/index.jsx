@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     console.log(responseList)
-    setIsCardOpen((responseList[0].title)? true : false);
+    // setIsCardOpen((responseList[0].title)? true : false);
   }, [responseList])
 
   return (
@@ -100,6 +100,7 @@ function DemoCard() {
           {avatarList.map((avatar, index) => (
             <Avatar key={index} className="z-20 size-8 ring-2 ring-white">
               <AvatarImage src={avatar.src} />
+              {/* <Skeleton className="h-full w-full rounded-full" /> */}
             </Avatar>
           ))}
         </div>
@@ -107,14 +108,20 @@ function DemoCard() {
         <ScrollArea className="max-h-[35vh]">
           <div>
             {responseList.map((reply, index) => (
-              <div key={index} className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-                {reply.iconComponent}
+              <div key={index} className="KK mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                <div className="AAA">
+                  {reply.title ? (
+                    reply.iconComponent
+                  ) : (
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                  )}
+                </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium leading-none">
                     {reply.title ? (
                       <AnimatedText text={reply.title} />
                     ) : (
-                      <Skeleton className="w-24 h-4" />
+                      <Skeleton className="w-full h-4" />
                     )}
                   </div>
                   <div className="text-sm text-muted-foreground">
