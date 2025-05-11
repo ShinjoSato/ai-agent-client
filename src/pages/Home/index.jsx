@@ -51,6 +51,22 @@ export default function Home() {
             </motion.div>
           )}
         </div>
+        <div className={clsx(
+          "hidden md:block md:w-1/2 xl:w-1/3",
+          "absolute left-0 pointer-events-auto p-3"
+        )}>
+          {isCardOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="origin-top-right"
+            >
+              <DemoStatusCard />
+            </motion.div>
+          )}
+        </div>
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/50 rounded-[10px] pointer-events-auto">
           <AudioProcessor
             setParticleIntensity={(intensity) => (particleIntensityRef.current = intensity)}
@@ -77,7 +93,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 const avatarList = [
   {
-    src: "https://github.com/ShinjoSato.png",
+    src: "dummy_hattori.png",
     name: "John Doe",
   },{
     src: "https://github.com/ShinjoSato.png",
@@ -92,7 +108,7 @@ function DemoCard() {
   const { responseList } = useResponseStore();
 
   return (
-    <Card className="BBB bg-black/30 backdrop-blur">
+    <Card className="bg-black/30 backdrop-blur">
       {/* <CardHeader>
       </CardHeader> */}
       <CardContent className="p-4">
@@ -175,5 +191,54 @@ const AnimatedText = ({ text, delay = 30 }) => {
         </span>
       ))}
     </span>
+  )
+}
+
+
+function DemoStatusCard() {
+  const { responseList } = useResponseStore();
+
+  return (
+    <Card className="w-full h-full bg-black/30 backdrop-blur">
+      {/* <CardHeader>
+      </CardHeader> */}
+      <CardContent className="p-4">
+
+        <div className="relative w-full max-w-md mx-auto">
+          <div className="back">
+            <Avatar className="w-full h-auto">
+              <AvatarImage
+                src="/brain_voice_heart_pictogram.png"
+                className="w-full h-auto object-contain"
+              />
+            </Avatar>
+          </div>
+
+          <div className="absolute inset-0 z-10 front">
+            <div className="absolute left-[45%] top-[23%] -translate-x-1/2">
+              <Avatar className="size-8 ring-2 z-20">
+                <AvatarImage src="https://github.com/ShinjoSato.png" />
+              </Avatar>
+            </div>
+
+            <div className="absolute right-[10%] top-[42%]">
+              <Avatar className="size-8 ring-2 z-20">
+                <AvatarImage src="https://github.com/ShinjoSato.png" />
+              </Avatar>
+            </div>
+
+            <div className="absolute left-[48%] bottom-[25%] -translate-x-1/2">
+              <Avatar className="size-8 ring-2 z-20">
+                <AvatarImage src="/dummy_hattori.png" />
+              </Avatar>
+            </div>
+          </div>
+        </div>
+
+
+      </CardContent>
+      {/* <CardFooter>
+      </CardFooter> */}
+    </Card>
   )
 }

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { Languages, User, Bot } from 'lucide-react';
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 export const useResponseStore = create((set) => ({
   responseList: [{
@@ -9,6 +10,9 @@ export const useResponseStore = create((set) => ({
     subtitle: ''
   }, {
     iconComponent: <User className="h-4 w-4 text-sky-500"/>,
+    // iconComponent: <Avatar className="h-6 w-6 text-sky-500">
+    //   <AvatarImage src={'/brain_voice_heart_pictogram.png'} />
+    // </Avatar>,
     type: 'request',
     title: '',
     subtitle: ''
