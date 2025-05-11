@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     console.log(responseList)
-    // setIsCardOpen((responseList[0].title)? true : false);
+    setIsCardOpen((responseList[0].title)? true : false);
   }, [responseList])
 
   return (
@@ -108,8 +108,8 @@ function DemoCard() {
         <ScrollArea className="max-h-[35vh]">
           <div>
             {responseList.map((reply, index) => (
-              <div key={index} className="KK mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-                <div className="AAA">
+              <div key={index} className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                <div>
                   {reply.title ? (
                     reply.iconComponent
                   ) : (
