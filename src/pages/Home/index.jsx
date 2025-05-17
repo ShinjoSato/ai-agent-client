@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     console.log(responseList)
-    setIsCardOpen((responseList[0].title)? true : false);
+    setIsCardOpen(responseList.length > 0)
   }, [responseList])
 
   return (
@@ -106,6 +106,11 @@ const avatarList = [
 
 function DemoCard() {
   const { responseList } = useResponseStore();
+  const [isProceed, setIsProceed] = useState(false)
+
+  useEffect(() => {
+    setIsProceed(responseList.at(-1).status === 0) // 0: 継続, 1: 終了
+  }, [responseList])
 
   return (
     <Card className="bg-black/30 backdrop-blur">
@@ -121,35 +126,38 @@ function DemoCard() {
           ))}
         </div>
 
-        <ScrollArea className="max-h-[35vh]">
+        <ScrollArea className="max-h-[50vh]">
           <div>
             {responseList.map((reply, index) => (
               <div key={index} className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
                 <div>
-                  {reply.title ? (
-                    reply.iconComponent
-                  ) : (
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                  )}
+                  { reply.iconComponent }
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium leading-none">
-                    {reply.title ? (
-                      <AnimatedText text={reply.title} />
-                    ) : (
-                      <Skeleton className="w-full h-4" />
-                    )}
+                    <AnimatedText text={reply.message} />
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {reply.subtitle ? (
-                      <AnimatedText text={reply.subtitle} />
-                    ) : (
-                      <Skeleton className="w-24 h-4" />
-                    )}
+                    <AnimatedText text={reply.language} />
                   </div>
                 </div>
               </div>
             ))}
+            {(isProceed) && (
+              <div className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
+                <div>
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium leading-none">
+                    <Skeleton className="w-full h-4" />
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <Skeleton className="w-24 h-4" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </CardContent>
@@ -194,6 +202,8 @@ const AnimatedText = ({ text, delay = 30 }) => {
   )
 }
 
+import { EnhancedAvatar } from "@/components/common/EnhancedAvatar";
+import { Brain, Speech, Heart } from 'lucide-react';
 
 function DemoStatusCard() {
   const { responseList } = useResponseStore();
@@ -216,21 +226,36 @@ function DemoStatusCard() {
 
           <div className="absolute inset-0 z-10 front">
             <div className="absolute left-[45%] top-[23%] -translate-x-1/2">
-              <Avatar className="size-8 ring-2 z-20">
-                <AvatarImage src="https://github.com/ShinjoSato.png" />
-              </Avatar>
+              <EnhancedAvatar
+                shape="rounded"
+                size="lg"
+                src="https://github.com/ShinjoSato.png"
+                alt="Extra Large Avatar"
+                bottomRightBadge={<Brain className="h-4 w-4 text-white" />}
+                bottomRightBadgeBg="#22c55e"
+              />
             </div>
 
             <div className="absolute right-[10%] top-[42%]">
-              <Avatar className="size-8 ring-2 z-20">
-                <AvatarImage src="https://github.com/ShinjoSato.png" />
-              </Avatar>
+              <EnhancedAvatar
+                shape="rounded"
+                size="lg"
+                src="https://github.com/ShinjoSato.png"
+                alt="Extra Large Avatar"
+                bottomRightBadge={<Speech className="h-4 w-4 text-white" />}
+                bottomRightBadgeBg="#22c55e"
+              />
             </div>
 
             <div className="absolute left-[48%] bottom-[25%] -translate-x-1/2">
-              <Avatar className="size-8 ring-2 z-20">
-                <AvatarImage src="/dummy_hattori.png" />
-              </Avatar>
+              <EnhancedAvatar
+                shape="rounded"
+                size="lg"
+                src="/dummy_hattori.png"
+                alt="Extra Large Avatar"
+                bottomRightBadge={<Heart className="h-4 w-4 text-white" />}
+                bottomRightBadgeBg="#22c55e"
+              />
             </div>
           </div>
         </div>
