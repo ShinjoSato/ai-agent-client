@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Mic, LoaderCircle, CircleStop } from 'lucide-react';
+import { Mic, LoaderCircle, CircleStop, Brain, Speech, Heart } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { useResponseStore } from "@/stores/responseStore"
 
@@ -21,7 +21,7 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
   const ws = useRef(null);
   const audioContext = useRef(null);
   const sourceBuffer = useRef(null);
-  const { setResponseList } = useResponseStore();
+  const { setResponseList, setRoleList } = useResponseStore();
 
   // 🔴 録音開始
   const startRecording = async () => {
@@ -65,6 +65,24 @@ function useAudioRecorder(setParticleIntensity, setIsPlaying, setIsWaiting) {
               if (response.type === 0) {
                 // トークに追加
                 setResponseList(response)
+              } else if (response.type === 1) {
+                // 設定ログに追加
+                const data = {...response}
+                switch (response.role.type ) {
+                  case 0:
+                    data.src = 'https://github.com/ShinjoSato.png'
+                    data.batchIcon = <Brain className="h-4 w-4 text-white" />
+                    break
+                  case 1:
+                    data.src = 'https://github.com/ShinjoSato.png'
+                    data.batchIcon = <Speech className="h-4 w-4 text-white" />
+                    break
+                  case 2:
+                    data.src = '/dummy_hattori.png'
+                    data.batchIcon = <Heart className="h-4 w-4 text-white" />
+                    break
+                }
+                setRoleList(data)
               }
             } else if (event.data instanceof ArrayBuffer) {
                 // MP3 の場合

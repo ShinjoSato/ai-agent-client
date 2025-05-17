@@ -1,6 +1,5 @@
 import { create } from 'zustand'
-import { Languages, User, Bot } from 'lucide-react';
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { User, Bot } from 'lucide-react';
 
 export const useResponseStore = create((set) => ({
   responseList: [],
@@ -12,6 +11,15 @@ export const useResponseStore = create((set) => ({
         iconComponent: (data.user.type === 1)
           ? <User className="h-4 w-4 text-sky-500"/>
           : <Bot className="h-4 w-4 text-sky-500"/>
+      }
+    ]
+  })),
+  roleList: [],
+  setRoleList: (data) => set((state) => ({
+    roleList: [
+      ...state.roleList,
+      {
+        ...data
       }
     ]
   })),

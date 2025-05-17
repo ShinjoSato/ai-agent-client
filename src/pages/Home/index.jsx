@@ -89,7 +89,7 @@ import {
 } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
+import { TalkLine } from "@/components/common/TalkLine";
 
 const avatarList = [
   {
@@ -129,34 +129,20 @@ function DemoCard() {
         <ScrollArea className="max-h-[50vh]">
           <div>
             {responseList.map((reply, index) => (
-              <div key={index} className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-                <div>
-                  { reply.iconComponent }
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm font-medium leading-none">
-                    <AnimatedText text={reply.message} />
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <AnimatedText text={reply.language} />
-                  </div>
-                </div>
-              </div>
+              <TalkLine
+                key={index}
+                icon={reply.iconComponent}
+                title={reply.message}
+                subtitle={reply.language}
+              />
             ))}
             {(isProceed) && (
-              <div className="grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
-                <div>
-                  <Skeleton className="h-4 w-4 rounded-full" />
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm font-medium leading-none">
-                    <Skeleton className="w-full h-4" />
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <Skeleton className="w-24 h-4" />
-                  </div>
-                </div>
-              </div>
+              <TalkLine
+                icon={null}
+                title={null}
+                subtitle={null}
+                isLoading={true}
+              />
             )}
           </div>
         </ScrollArea>
@@ -169,44 +155,12 @@ function DemoCard() {
 }
 
 
-const AnimatedText = ({ text, delay = 30 }) => {
-  const [visibleLength, setVisibleLength] = useState(0)
 
-  useEffect(() => {
-    setVisibleLength(0)
-    const interval = setInterval(() => {
-      setVisibleLength((prev) => {
-        if (prev >= text.length) {
-          clearInterval(interval)
-          return prev
-        }
-        return prev + 1
-      })
-    }, delay)
-
-    return () => clearInterval(interval)
-  }, [text, delay])
-
-  return (
-    <span className="whitespace-pre-wrap break-words [word-break:keep-all]">
-      {text.slice(0, visibleLength).split("").map((char, i) => (
-        <span
-          key={i}
-          className="opacity-0 animate-fade-in inline"
-          style={{ animationDelay: `${i * delay}ms`, animationFillMode: "forwards" }}
-        >
-          {char}
-        </span>
-      ))}
-    </span>
-  )
-}
-
-import { EnhancedAvatar } from "@/components/common/EnhancedAvatar";
 import { Brain, Speech, Heart } from 'lucide-react';
+import {RoleLine} from "@/components/common/RoleLine";
 
 function DemoStatusCard() {
-  const { responseList } = useResponseStore();
+  const { responseList, roleList } = useResponseStore();
 
   return (
     <Card className="w-full h-full bg-black/30 backdrop-blur">
@@ -223,44 +177,17 @@ function DemoStatusCard() {
               />
             </Avatar>
           </div>
-
           <div className="absolute inset-0 z-10 front">
-            <div className="absolute left-[45%] top-[23%] -translate-x-1/2">
-              <EnhancedAvatar
-                shape="rounded"
-                size="lg"
-                src="https://github.com/ShinjoSato.png"
-                alt="Extra Large Avatar"
-                bottomRightBadge={<Brain className="h-4 w-4 text-white" />}
-                bottomRightBadgeBg="#22c55e"
+            {roleList.map((role, index) => (
+              <RoleLine
+                key={index}
+                src={role.src}
+                batchIcon={role.batchIcon}
+                message={role.message}
               />
-            </div>
-
-            <div className="absolute right-[10%] top-[42%]">
-              <EnhancedAvatar
-                shape="rounded"
-                size="lg"
-                src="https://github.com/ShinjoSato.png"
-                alt="Extra Large Avatar"
-                bottomRightBadge={<Speech className="h-4 w-4 text-white" />}
-                bottomRightBadgeBg="#22c55e"
-              />
-            </div>
-
-            <div className="absolute left-[48%] bottom-[25%] -translate-x-1/2">
-              <EnhancedAvatar
-                shape="rounded"
-                size="lg"
-                src="/dummy_hattori.png"
-                alt="Extra Large Avatar"
-                bottomRightBadge={<Heart className="h-4 w-4 text-white" />}
-                bottomRightBadgeBg="#22c55e"
-              />
-            </div>
+            ))}
           </div>
         </div>
-
-
       </CardContent>
       {/* <CardFooter>
       </CardFooter> */}
