@@ -105,11 +105,17 @@ const avatarList = [
 ]
 
 function DemoCard() {
+  const responseListRef = useRef(null)
   const { responseList } = useResponseStore();
   const [isProceed, setIsProceed] = useState(false)
 
   useEffect(() => {
     setIsProceed(responseList.at(-1).status === 0) // 0: 継続, 1: 終了
+
+    const timeout = setTimeout(() => {
+      responseListRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+    }, 0)
+    return () => clearTimeout(timeout)
   }, [responseList])
 
   return (
@@ -127,8 +133,8 @@ function DemoCard() {
         </div>
 
         <ScrollArea className="max-h-[50vh]">
-          <div>
-            {responseList.map((reply, index) => (
+          <div className="flex flex-1 flex-col h-full">
+            {responseList.map((reply, index) => (              
               <TalkLine
                 key={index}
                 icon={reply.iconComponent}
@@ -144,6 +150,7 @@ function DemoCard() {
                 isLoading={true}
               />
             )}
+            <div ref={responseListRef} />
           </div>
         </ScrollArea>
       </CardContent>
@@ -155,15 +162,22 @@ function DemoCard() {
 }
 
 
-
-import { Brain, Speech, Heart } from 'lucide-react';
 import {RoleLine} from "@/components/common/RoleLine";
 
 function DemoStatusCard() {
+  const roleListRef = useRef(null)
   const { responseList, roleList } = useResponseStore();
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      roleListRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+    }, 0)
+
+    return () => clearTimeout(timeout)
+  }, [responseList.length])
+
   return (
-    <Card className="w-full h-full bg-black/30 backdrop-blur">
+    <Card className="w-full h-full bg-transparent border-none shadow-none">
       {/* <CardHeader>
       </CardHeader> */}
       <CardContent className="p-4">
@@ -177,16 +191,19 @@ function DemoStatusCard() {
               />
             </Avatar>
           </div>
-          <div className="absolute inset-0 z-10 front">
-            {roleList.map((role, index) => (
-              <RoleLine
-                key={index}
-                src={role.src}
-                batchIcon={role.batchIcon}
-                message={role.message}
-              />
-            ))}
-          </div>
+          <ScrollArea className="!absolute inset-0 z-10 front">
+            <div className="flex flex-1 flex-col h-full">
+              {roleList.map((role, index) => (
+                <RoleLine
+                  key={index}
+                  src={role.src}
+                  batchIcon={role.batchIcon}
+                  message={role.message}
+                />
+              ))}
+              <div ref={roleListRef} />
+            </div>
+          </ScrollArea>
         </div>
       </CardContent>
       {/* <CardFooter>
